@@ -12,24 +12,21 @@ cur = conn.cursor()
 
 
 def create_recipe(recipe_id, name, description, servings, difficulty, steps, cooking_time, rating, username, categories, ingredients):
-    try:
-        cur.execute('INSERT INTO "Recipe" ("Recipe_ID", "Recipe_Name", "Description", "Servings", '
-                    '"Difficulty", "Steps", "Cooking_Time", "Rating", "Author_Username", "Creation_Date") '
-                    'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                    (recipe_id, name, description, servings, difficulty, steps, cooking_time, rating, username, date.today()))
 
-        conn.commit()
-        for cat in categories:
-            create_category(cat, recipe_id)
+    cur.execute('INSERT INTO "Recipe" ("Recipe_ID", "Recipe_Name", "Description", "Servings", '
+                '"Difficulty", "Steps", "Cooking_Time", "Rating", "Author_Username", "Creation_Date") '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                (recipe_id, name, description, servings, difficulty, steps, cooking_time, rating, username, date.today()))
 
-        for ing in ingredients:
-            result = get_ingredient(ing)
-            if result.rows.length >= 1:
-                item_id = result.rows[0].Item_ID
-                create_ingredient(item_id, recipe_id)
+    conn.commit()
+    for cat in categories:
+        create_category(cat, recipe_id)
 
-    except:
-        print("Could not create recipe")
+    for ing in ingredients:
+        result = get_ingredient(ing)
+        if result.rows.length >= 1:
+            item_id = result.rows[0].Item_ID
+            create_ingredient(item_id, recipe_id)
 
 
 def update_recipe(attribute, change, recipe_id):
@@ -147,11 +144,10 @@ def get_users():
         print("Could not get Users")
 
 def get_user(username: str):
-    try:
-        cur.execute('SELECT * FROM "User" where "Username" = %s', username)
-        return cur.fetchall()
-    except:
-        return None
+
+    cur.execute('SELECT * FROM "User" where "Username" = %s', [username])
+    return cur.fetchall()
+
 
 def get_recipe():
     try:
@@ -159,3 +155,8 @@ def get_recipe():
         return cur.fetchall()
     except:
         print("Could not get Recipes")
+
+
+def get_user_recipe(name: str):
+    cur.execute('SELECT * FROM "Recipe" where "Author_Username" = %s', [name])
+    return cur.fetchall()
