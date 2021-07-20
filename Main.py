@@ -229,9 +229,43 @@ def recipe_menu(user: User):
             continue
 
 
-def pantry_menu():
-    #TODO
+def edit_pantry():
     pass
+
+
+def add_pantry_item():
+    pass
+
+def pantry_menu(user: User):
+    """
+        displays the different things that can be done with pantry items
+        :param user: user logged in
+        :return: True if user goes back
+        """
+    while True:
+        print("Choose an option",
+              "================",
+              "1. Edit Pantry",
+              "2. Add Items",
+              "3. Go Back to Main Menu", sep="\n")
+
+        try:
+            op = int(input(">"))
+
+            if op == 1:
+                clear()
+                #todo
+                return True
+            elif op == 2:
+                clear()
+                #todo
+                return True
+            elif op == 3:
+                return True
+        except ValueError:
+            clear()
+            print("Incorrect option. Try again\n")
+            continue
 
 
 def inner_menu(user: User):
@@ -245,7 +279,7 @@ def inner_menu(user: User):
     while True:
         print("Choose an option",
               "================",
-              "1. Recipe Options",
+              "1. Recipe Book",
               "2. View Pantry",
               "3. Edit User Info", #TODO
               "4. Log Out", sep="\n") #TODO
@@ -261,7 +295,9 @@ def inner_menu(user: User):
                 break
             elif op == 2:
                 clear()
-                pantry_menu()
+                if pantry_menu(user):
+                    clear()
+                    continue
                 break
             elif op == 3:
                 pass
@@ -353,6 +389,7 @@ def menu():
                 register()
                 break
             elif op == 3:
+                print("Goodbye ..")
                 exit(0)
         except ValueError:
             clear()
