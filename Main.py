@@ -236,6 +236,7 @@ def edit_pantry():
 def add_pantry_item():
     pass
 
+
 def pantry_menu(user: User):
     """
         displays the different things that can be done with pantry items
@@ -358,7 +359,7 @@ def register():
         print("User {s} already exists. Try logging in.".format(s = username))
         menu()
     else:
-        next_id = len(Query.get_user_count()) + 1
+        next_id = len(Query.get_users()) + 1
         Query.create_user(username, password, next_id)
         user = User(username, password, next_id)
         print("User Created")
