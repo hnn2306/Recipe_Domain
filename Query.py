@@ -139,12 +139,19 @@ def get_track():
         print("Could not grab tracks")
 
 
-def get_user():
+def get_users():
     try:
         cur.execute('SELECT * FROM "User"')
         return cur.fetchall()
     except:
         print("Could not get Users")
+
+def get_user(username: str):
+    try:
+        cur.execute('SELECT * FROM "User" where "Username" = %s', username)
+        return cur.fetchall()
+    except:
+        return None
 
 def get_recipe():
     try:

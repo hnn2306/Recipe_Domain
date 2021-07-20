@@ -1,5 +1,51 @@
+import os
+import Query
+
+def clear():
+    """
+    clears the entire terminal and
+    and goes back to the top
+    """
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def login():
+    """
+    user login
+    """
+    print("User Login")
+    username = input("Username: ")
+    password = input("Password: ")
+
+    if Query.get_user(username) is None:
+        print("User does not exist. Verify or try again")
+    else:
+        pass
+
+def menu():
+    """
+    displays the menu option and directs the user to the next step
+    :return: None
+    """
+    while(True):
+        print("Choose an option", "================", "1. Login", "2. Register", "3. Exit", "================", sep="\n")
+
+        try:
+            op = int(input(">"))
+
+            if op == 1:
+                login()
+                break
+            if op == 2:
+                pass
+                break
+        except ValueError:
+            clear()
+            print("Incorrect option. Try again\n")
+            continue
+
 def main():
-    pass
+    print("Welcome to Recipe Domain by team Gyarados\n")
+    menu()
 
 if __name__ == "__main__":
     main()
