@@ -123,6 +123,14 @@ def create_item(id, aisle, name, date):
         print("Could not create item")
 
 
+def get_items():
+    try:
+        cur.execute('SELECT * FROM "Item"')
+        return cur.fetchall()
+    except:
+        print("Could not get Items")
+
+
 def update_track():
     pass
 
@@ -160,3 +168,24 @@ def get_recipe():
 def get_user_recipe(name: str):
     cur.execute('SELECT * FROM "Recipe" where "Author_Username" = %s', [name])
     return cur.fetchall()
+
+
+def get_recipe_name(name: str):
+    cur.execute('SELECT * FROM "Recipe" where "Recipe_Name" ~* %s', [name] )
+    return cur.fetchall()
+
+# def get_recipe_ing(ingrident: )
+
+
+def get_recipe_cate(cate: str):
+    cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
+                '(SELECT "Recipe_ID" FROM "Categories" where "Category" = %s)', [cate])
+    return cur.fetchall()
+
+def get_recipe_ing(ing: str):
+    cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
+                '(SELECT "Recipe_ID" FROM "Ingredients" where "Item_ID" IN'
+                '(SELECT "Item_ID" FROM "Item" where "Item_Name" = %s))', [ing])
+    return cur.fetchall()
+
+

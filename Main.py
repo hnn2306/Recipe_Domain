@@ -92,6 +92,47 @@ def create_recipe(user: User):
     #TODO what to do with the recipe object??
 
 
+def search_by_name():
+    name = input("Enter name: ")
+    query = Query.get_recipe_name(name)
+
+    if not query:
+        print("Sorry, there is no " + name)
+    else:
+        for item in query:
+            print(item)
+
+    input("Press any key to close")
+    return True
+
+def search_by_category():
+    category = input("Enter category: ")
+    query = Query.get_recipe_cate(category)
+
+    if not query:
+        print("sorry, there are no recipes in " + category)
+    else:
+        for i in query:
+            print(i)
+            # print(Query.get_recipe_id(i))
+
+    input("Press any key to close")
+    return True
+
+def search_by_ingredients():
+    ing = input("Enter one ingredient: ")
+    query = Query.get_recipe_ing(ing)
+
+    if not query:
+        print("sorry, there are no recipes wiht " + ing)
+    else:
+        for i in query:
+            print(i)
+            # print(Query.get_recipe_id(i))
+
+    input("Press any key to close")
+    return True
+
 def search_recipes_menu(user:User):
     """
     menu that allows the user to search a recipe given an attribute
@@ -112,16 +153,16 @@ def search_recipes_menu(user:User):
             op = int(input(">"))
 
             if op == 1:
-                pass
-                # TODO
+                clear()
+                search_by_name()
                 break
             elif op == 2:
-                pass
-                # TODO
+                clear()
+                search_by_ingredients()
                 break
             elif op == 3:
-                pass
-                # TODO
+                clear()
+                search_by_category()
                 break
             elif op == 4:
                 return True
@@ -234,7 +275,34 @@ def edit_pantry():
 
 
 def add_pantry_item():
-    pass
+    name = input("Enter name: ")
+    aisle = input("Enter aisle: ")
+    exdate = input("Enter expire date (YYYY-MM-DD): ")
+
+    query = Query.get_items()
+
+
+    next_id = len(Query.get_items()) + 1
+    Query.create_item(next_id, aisle, name, exdate)
+    print("item created")
+    # if query != []:
+        # todo if the item exist in pantry, update the track
+
+
+
+def display_all_items():
+    query = Query.get_items()
+
+    print("=== Pantry ===")
+    for item in query:
+        print("Name: " + item[2])
+        print("Aisle: " + str(item[1]))
+        print("Expire date: " + item[3])
+        print("========")
+
+    input("Press any key to close")
+    return True
+
 
 
 def pantry_menu(user: User):
@@ -246,22 +314,27 @@ def pantry_menu(user: User):
     while True:
         print("Choose an option",
               "================",
-              "1. Edit Pantry",
-              "2. Add Items",
-              "3. Go Back to Main Menu", sep="\n")
+              "1. List Items",
+              "2. Edit Pantry",
+              "3. Add Items",
+              "4. Go Back to Main Menu", sep="\n")
 
         try:
             op = int(input(">"))
 
             if op == 1:
                 clear()
-                #todo
-                return True
+                display_all_items()
+                #todo I need to change this to getting pantry of user
             elif op == 2:
                 clear()
                 #todo
                 return True
             elif op == 3:
+                clear()
+                #todo
+                return True
+            elif op == 4:
                 return True
         except ValueError:
             clear()
