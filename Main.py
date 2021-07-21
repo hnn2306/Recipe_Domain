@@ -124,7 +124,7 @@ def search_by_ingredients():
     query = Query.get_recipe_ing(ing)
 
     if not query:
-        print("sorry, there are no recipes wiht " + ing)
+        print("sorry, there are no recipes with " + ing)
     else:
         for i in query:
             print(i)
@@ -171,6 +171,33 @@ def search_recipes_menu(user:User):
             print("Incorrect option. Try again\n")
             continue
 
+def sort(sort_type):
+    order = ""
+    while True:
+        try:
+            order = input("ASC or DESC? ")
+        except order != "ASC" or "DESC":
+            print("Invalid option. Try again.\n")
+            continue
+
+    query = None
+    if sort_type == "category":
+        query = Query.sort_recipes_by_category(order)
+    elif sort_type == "alphabetical":
+        query = Query.sort_recipes_by_alphabetical(order)
+    elif sort_type == "rating":
+        query = Query.sort_recipes_by_rating(order)
+    elif sort_type == "recency":
+        query = Query.sort_recipes_by_recency(order)
+
+    if query is not None:
+        for i in query:
+            print(i)
+    else:
+        print("Sort Unsuccessful")
+
+    input("Press any key to close")
+    return True
 
 def sort_recipes_menu(user: User):
     """
@@ -183,35 +210,35 @@ def sort_recipes_menu(user: User):
         print("Choose an option",
               "================",
               "1. Sort by Categories",
-              "2. Sort by alphabet",
+              "2. Sort by Alphabetical Order",
               "3. Sort by Rating",
-              "4. Sort by most Recent", # TODO
+              "4. Sort by Most Recent",
               "5. Go Back to Main Menu", sep="\n")
 
         try:
-            op = int(input(">"))
+            op = int(input("> "))
 
             if op == 1:
-                pass
-                # TODO
+                clear()
+                sort("category")
                 break
             elif op == 2:
-                pass
-                # TODO
+                clear()
+                sort("alphabetical")
                 break
             elif op == 3:
-                pass
-                # TODO
+                clear()
+                sort("rating")
                 break
             elif op == 4:
-                pass
-                # TODO
+                clear()
+                sort("recency")
                 break
             elif op == 5:
                 return True
         except ValueError:
             clear()
-            print("Incorrect option. Try again\n")
+            print("Incorrect option. Try again.\n")
             continue
 
 
@@ -225,10 +252,10 @@ def recipe_menu(user: User):
         print("Choose an option",
               "================",
               "1. Create Recipe",
-              "2. View all recipes",
+              "2. View All Recipes",
               "3. View Personal Recipes",
-              "4. Sort Recipe",
-              "5. Search Recipe",
+              "4. Sort Recipes",
+              "5. Search Recipes",
               "6. Go Back to Main Menu", sep="\n")
 
         try:

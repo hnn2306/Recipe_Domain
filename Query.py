@@ -162,7 +162,7 @@ def get_recipe():
         cur.execute('SELECT * FROM "Recipe"')
         return cur.fetchall()
     except:
-        print("Could not get Recipes")
+        print("Could not get Recipe")
 
 
 def get_user_recipe(name: str):
@@ -171,21 +171,35 @@ def get_user_recipe(name: str):
 
 
 def get_recipe_name(name: str):
-    cur.execute('SELECT * FROM "Recipe" where "Recipe_Name" ~* %s', [name] )
+    cur.execute('SELECT * FROM "Recipe" where "Recipe_Name" ~* %s ORDER BY Recipe_Name', [name] )
     return cur.fetchall()
-
-# def get_recipe_ing(ingrident: )
-
 
 def get_recipe_cate(cate: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
-                '(SELECT "Recipe_ID" FROM "Categories" where "Category" = %s)', [cate])
+                '(SELECT "Recipe_ID" FROM "Categories" where "Category" = %s) ORDER BY Recipe_Name', [cate])
     return cur.fetchall()
 
 def get_recipe_ing(ing: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
                 '(SELECT "Recipe_ID" FROM "Ingredients" where "Item_ID" IN'
-                '(SELECT "Item_ID" FROM "Item" where "Item_Name" = %s))', [ing])
+                '(SELECT "Item_ID" FROM "Item" where "Item_Name" = %s)) ORDER BY Recipe_Name', [ing])
     return cur.fetchall()
 
+def sort_recipes_by_category(order):
+    cur.execute('SELECT * FROM "Recipe" as "r"'
+                'JOIN "Categories" as "c" on c."Recipe_ID" = r."Recipe_ID"'
+                'ORDER BY "Category" %s', [order])
+    return cur.fetchall()
+
+def sort_recipes_by_alphabetical(order):
+    cur.execute('ALTER TABLE "Recipe" ORDER BY "Recipe_Name" %s', [order])
+    return get_recipe()
+
+def sort_recipes_by_rating(order):
+    cur.execute('ALTER TABLE "Recipe" ORDER BY "Rating" %s', [order])
+    return get_recipe()
+
+def sort_recipes_by_recency(order):
+    cur.execute('ALTER TABLE "Recipe" ORDER BY "Creation_Date" %s', [order])
+    return get_recipe()
 
