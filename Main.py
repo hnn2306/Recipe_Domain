@@ -220,19 +220,27 @@ def sort_recipes_menu(user: User):
 
             if op == 1:
                 clear()
-                sort("category")
+                if sort("category"):
+                    clear()
+                    continue
                 break
             elif op == 2:
                 clear()
-                sort("alphabetical")
+                if sort("alphabetical"):
+                    clear()
+                    continue
                 break
             elif op == 3:
                 clear()
-                sort("rating")
+                if sort("rating"):
+                    clear()
+                    continue
                 break
             elif op == 4:
                 clear()
-                sort("recency")
+                if sort("recency"):
+                    clear()
+                    continue
                 break
             elif op == 5:
                 return True
@@ -241,6 +249,23 @@ def sort_recipes_menu(user: User):
             print("Incorrect option. Try again.\n")
             continue
 
+def cook_recipe(user: User):
+    while True:
+        try:
+            recipeID = int(input("Enter the recipe ID of the recipe you would like to cook: "))
+            break
+        except ValueError:
+            print("Invalid input. Try again.")
+
+    while True:
+        try:
+            scale = int(input("Enter the scale of how much you would like to cook of this recipe: "))
+            break
+        except ValueError:
+            print("Invalid input. Try again.")
+
+    Query.mark_recipe(user.ID, recipeID, scale)
+    return True
 
 def recipe_menu(user: User):
     """
@@ -256,7 +281,8 @@ def recipe_menu(user: User):
               "3. View Personal Recipes",
               "4. Sort Recipes",
               "5. Search Recipes",
-              "6. Go Back to Main Menu", sep="\n")
+              "6. Cook Recipe"
+              "7. Go Back to Main Menu", sep="\n")
 
         try:
             op = int(input(">"))
@@ -290,6 +316,12 @@ def recipe_menu(user: User):
                     continue
                 break
             elif op == 6:
+                clear()
+                if cook_recipe(user):
+                    clear()
+                    continue
+                break
+            elif op == 7:
                 return True
         except ValueError:
             clear()

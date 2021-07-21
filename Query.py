@@ -203,3 +203,35 @@ def sort_recipes_by_recency(order):
     cur.execute('ALTER TABLE "Recipe" ORDER BY "Creation_Date" %s', [order])
     return get_recipe()
 
+def mark_recipe(userID, recipeID, scale):
+    cur.execute('SELECT * FROM "Recipe" WHERE "Recipe_ID" = %s', (recipeID,))
+    recipe = cur.fetchone()
+    if recipe is None or len(recipe) == 0:
+        print("Recipe does not exist")
+        return
+    else:
+        cur.execute('SELECT "Item_ID" FROM "Ingredients" WHERE "Recipe_ID" = %s', (recipeID,))
+        ingredientIDs = cur.fetchall()
+
+        for i in ingredientIDs:
+            cur.execute('SELECT "Quantity_Needed" FROM "Ingredients" WHERE "Recipe_ID" = %s'
+                        'AND "Item_ID" = %s', (recipeID, i[0]))
+            neededQuantity = cur.fetchone()[0]
+            scaledQuantity = neededQuantity * scale
+            cur.execute('SELECT "Current_Quantity" FROM "Track" WHERE "User_ID" = %s'
+                        'AND "Item_ID" = %s', (userID, i[0]))
+            quantityOwned = cur.fetchone()
+            if quantityOwned is None or len(quantityOwned) == 0:
+                print("Not enough quantity to make recipe.")
+                return False
+            quantityOwned = int(quantityOwned[0])
+            quantityRemaining = quantityOwned - scaledQuantity
+            if quantityRemaining >= 0:
+                cur.execute('UPDATE "Track" SET "Current_Quantity" = %s'
+                            'WHERE "User_ID" = %s AND "Item_ID" = %s', (quantityRemaining, userID, i))
+            else:
+                print("Not enough quantity to make recipe.")
+                return False
+
+    conn.commit()
+    return True
