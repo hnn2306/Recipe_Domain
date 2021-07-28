@@ -195,13 +195,16 @@ def sort_recipes_by_alphabetical(order):
     cur.execute('ALTER TABLE "Recipe" ORDER BY "Recipe_Name" %s', [order])
     return get_recipe()
 
+
 def sort_recipes_by_rating(order):
     cur.execute('ALTER TABLE "Recipe" ORDER BY "Rating" %s', [order])
     return get_recipe()
 
+
 def sort_recipes_by_recency(order):
     cur.execute('ALTER TABLE "Recipe" ORDER BY "Creation_Date" %s', [order])
     return get_recipe()
+
 
 def mark_recipe(userID, recipeID, scale):
     cur.execute('SELECT * FROM "Recipe" WHERE "Recipe_ID" = %s', (recipeID,))
@@ -218,8 +221,7 @@ def mark_recipe(userID, recipeID, scale):
                         'AND "Item_ID" = %s', (recipeID, i[0]))
             neededQuantity = cur.fetchone()[0]
             scaledQuantity = neededQuantity * scale
-            cur.execute('SELECT "Current_Quantity" FROM "Track" WHERE "User_ID" = %s'
-                        'AND "Item_ID" = %s', (userID, i[0]))
+            cur.execute('SELECT "Current_Quantity" FROM "Track" WHERE "User_ID" = %s AND "Item_ID" = %s', (userID, i[0]))
             quantityOwned = cur.fetchone()
             if quantityOwned is None or len(quantityOwned) == 0:
                 print("Not enough quantity to make recipe.")
@@ -235,3 +237,23 @@ def mark_recipe(userID, recipeID, scale):
 
     conn.commit()
     return True
+
+
+def update_user_name(id: str, name: str):
+    try:
+        cur.execute('UPDATE "User" SET "Username" = %s WHERE "User_ID" = %s', (name, id))
+        conn.commit()
+        return True
+    except Exception as e:
+        # print(e)
+        return False
+
+
+def update_user_pass(id: str, passw: str):
+    try:
+        cur.execute('UPDATE "User" SET "Password" = %s WHERE "User_ID" = %s', (passw, id))
+        conn.commit()
+        return True
+    except Exception as e:
+        # print(e)
+        return False

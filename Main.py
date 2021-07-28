@@ -2,7 +2,7 @@ import os
 import Query
 from User import User
 from Recipe import Recipe
-
+import time
 
 def display_personal_recipes(user: User):
     """
@@ -105,6 +105,7 @@ def search_by_name():
     input("Press any key to close")
     return True
 
+
 def search_by_category():
     category = input("Enter category: ")
     query = Query.get_recipe_cate(category)
@@ -118,6 +119,7 @@ def search_by_category():
 
     input("Press any key to close")
     return True
+
 
 def search_by_ingredients():
     ing = input("Enter one ingredient: ")
@@ -133,7 +135,8 @@ def search_by_ingredients():
     input("Press any key to close")
     return True
 
-def search_recipes_menu(user:User):
+
+def search_recipes_menu(user: User):
     """
     menu that allows the user to search a recipe given an attribute
     :param user: user logged in
@@ -171,6 +174,7 @@ def search_recipes_menu(user:User):
             print("Incorrect option. Try again\n")
             continue
 
+
 def sort(sort_type):
     order = ""
     while True:
@@ -198,6 +202,7 @@ def sort(sort_type):
 
     input("Press any key to close")
     return True
+
 
 def sort_recipes_menu(user: User):
     """
@@ -249,6 +254,7 @@ def sort_recipes_menu(user: User):
             print("Incorrect option. Try again.\n")
             continue
 
+
 def cook_recipe(user: User):
     while True:
         try:
@@ -267,6 +273,41 @@ def cook_recipe(user: User):
     Query.mark_recipe(user.ID, recipeID, scale)
     return True
 
+
+def find_recipe_to_edit() -> Recipe:
+    """
+    gives the user options of finding a recipe so they can edit it
+    :return: the recipe once found
+    """
+
+
+def edit_a_recipe_menu():
+    """
+    allows the user to edit attributes of a recipe
+    :return: TODO
+    """
+    while True:
+        print("Chose an option",
+              "================",
+              "1. Edit Recipe Name",
+              "2. Edit Description",
+              "3. Edit Serving Quantity",
+              "4. Edit Difficulty Level (Easy, Medium, Hard)",
+              "5. Edit Steps",
+              "6. Edit Cooking Time",
+              "7. Edit Rating (1-5)",
+              "8. Go Back")
+
+        try:
+            op = int(input("> ").strip())
+
+        except ValueError:
+            clear()
+            print("Incorrect option. Try again\n")
+            continue
+
+
+
 def recipe_menu(user: User):
     """
     displays the different thins that can be done with recipes
@@ -281,8 +322,9 @@ def recipe_menu(user: User):
               "3. View Personal Recipes",
               "4. Sort Recipes",
               "5. Search Recipes",
-              "6. Cook Recipe"
-              "7. Go Back to Main Menu", sep="\n")
+              "6. Cook Recipe",
+              "7. Edit a Recipe",
+              "8. Go Back to Main Menu", sep="\n")
 
         try:
             op = int(input(">"))
@@ -322,6 +364,9 @@ def recipe_menu(user: User):
                     continue
                 break
             elif op == 7:
+                clear()
+
+            elif op == 8:
                 return True
         except ValueError:
             clear()
@@ -348,7 +393,6 @@ def add_pantry_item():
         # todo if the item exist in pantry, update the track
 
 
-
 def display_all_items():
     query = Query.get_items()
 
@@ -361,7 +405,6 @@ def display_all_items():
 
     input("Press any key to close")
     return True
-
 
 
 def pantry_menu(user: User):
@@ -401,6 +444,57 @@ def pantry_menu(user: User):
             continue
 
 
+def user_edit_menu(user: User):
+    while True:
+        print("Choose an option",
+              "================",
+              "1. Edit Username",
+              "2. Edit Password",
+              "3. Go Back", sep="\n") #TODO
+
+        try:
+            op = int(input("> "))
+
+            if op == 1:
+                clear()
+                name = input("Enter new Username or leave blank to cancel: ").strip()
+                if name == "":
+                    clear()
+                    continue
+                else:
+                    if Query.update_user_name(user.ID, name):
+                        clear()
+                        print("Username Changed to {n}".format(n=name))
+                        user.username = name
+                        return True  # brings user back to previous menu
+                    else:
+                        print("That username is not available. Try again.")
+                        continue
+
+            elif op == 2:
+                clear()
+                passw = input("Enter new new Password or leave blank to cancel: ").strip()
+                if passw == "":
+                    clear()
+                    continue
+                else:
+                    if Query.update_user_pass(user.ID, passw):
+                        clear()
+                        print("Password changed")
+                        user.password = passw
+                        # print(user)
+                        return True  # go back to main menu
+
+            elif op == 3:
+                clear()
+                return True
+
+        except ValueError:
+            clear()
+            print("Incorrect option. Try again\n")
+            continue
+
+
 def inner_menu(user: User):
     """
     displays menu for uhhh recipes and pantry
@@ -408,7 +502,7 @@ def inner_menu(user: User):
     :return: True if User log out
     """
     clear()
-    print("Welcome back {name}".format(name = user.username))
+    print("Welcome back {name}!".format(name = user.username))
     while True:
         print("Choose an option",
               "================",
@@ -418,7 +512,7 @@ def inner_menu(user: User):
               "4. Log Out", sep="\n") #TODO
 
         try:
-            op = int(input(">"))
+            op = int(input("> "))
 
             if op == 1:
                 clear()
@@ -433,14 +527,32 @@ def inner_menu(user: User):
                     continue
                 break
             elif op == 3:
-                pass
-                #TODO: log out user
-            elif op == 4:
                 clear()
-                print("Logging you out") #TODO
+                if user_edit_menu(user):
+                    continue
+            elif op == 4:
+
+                clear()
+                const = ". . . "
+                message = "Logging you out"
+                message = message + const
+                print(message)
+
+                for i in range(3):
+                    time.sleep(0.5)
+                    # remove a dot form message
+                    message = message[:-2]
+                    # clear and reprint message
+                    clear()
+                    print(message)
+                time.sleep(0.5)
+                # at the end clear and return
+                clear()
+                return True
+
         except ValueError:
             clear()
-            print("Incorrect option. Try again\n")
+            print("Incorrect option. Try again.\n")
             continue
 
 
@@ -455,6 +567,7 @@ def clear():
 def login():
     """
     user login
+    returns True if user has logged out
     """
     print("================", "User Login", sep="\n")
     username = input("Username: ")
@@ -468,8 +581,12 @@ def login():
     else:
         if(query[0][1] == password):
             print("Logging you in ...")
-            user = User(username, password, query[0][2])
-            inner_menu(user)
+            # print(query)
+            # time.sleep(5)
+            user = User(username, password, query[0][4])
+
+            if inner_menu(user):
+                return True
 
         else:
             clear()
@@ -480,6 +597,7 @@ def login():
 def register():
     """
     user registration
+    returns True if user has logged out
     """
     print("================", "User Registration", sep="\n")
     username = input("Username: ")
@@ -495,7 +613,8 @@ def register():
         Query.create_user(username, password, next_id)
         user = User(username, password, next_id)
         print("User Created")
-        inner_menu(user)
+        if inner_menu(user):
+            return True
 
 
 def menu():
@@ -511,15 +630,17 @@ def menu():
               "================", sep="\n")
 
         try:
-            op = int(input(">"))
+            op = int(input("> "))
 
             if op == 1:
                 clear()
-                login()
+                if login():
+                    continue
                 break
             elif op == 2:
                 clear()
-                register()
+                if register():
+                    continue
                 break
             elif op == 3:
                 print("Goodbye ..")
