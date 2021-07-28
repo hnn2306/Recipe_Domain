@@ -4,6 +4,7 @@ from User import User
 from Recipe import Recipe
 import time
 
+
 def display_personal_recipes(user: User):
     """
     displays all recipes belonging to the provided user
@@ -18,6 +19,7 @@ def display_personal_recipes(user: User):
             print(rec)
 
     input("Press any key to close")
+    clear()
     return True
 
 
@@ -34,6 +36,7 @@ def display_all_recipes():
             print(rec)
 
     input("Press any key to close")
+    clear()
     return True
 
 
@@ -352,7 +355,7 @@ def find_recipe_to_edit() -> Recipe:
 def edit_a_recipe_menu(recipe: Recipe):
     """
     allows the user to edit attributes of a recipe
-    :return: TODO
+    :return:
     """
     while True:
         print("Recipe Selected: ")
@@ -374,12 +377,116 @@ def edit_a_recipe_menu(recipe: Recipe):
 
             if op == 1:
                 clear()
-                name = input("Enter new name: ")
-                Query.update_recipe("Recipe_Name", name, recipe.recipe_id)
+                name = input("Enter new name: ").strip()
+
+                if name == "" or name == recipe.name:
+                    clear()
+                    print("Name Attribute did not change.")
+                    continue
+
+                else:
+                    Query.update_recipe("Recipe_Name", name, recipe.recipe_id)
+                    clear()
+                    print("Recipe Name changed from {rec_name} to {new_name}.\n".format(rec_name=recipe.name, new_name=name))
+                    recipe.name = name
+                    continue
+
+            elif op == 2:
                 clear()
-                print("Recipe Name changed from {rec_name} to {new_name}\n".format(rec_name=recipe.name, new_name=name))
-                recipe.name = name
-                continue
+                desc = input("Enter new description: ").strip()
+
+                if desc == "" or desc == recipe.description:
+                    clear()
+                    print("Description Attribute did not change.")
+                    continue
+
+                else:
+                    Query.update_recipe("Description", desc, recipe.recipe_id)
+                    clear()
+                    print("Recipe description has changed.\n")
+                    recipe.description = desc
+                    continue
+
+            elif op == 3:
+                clear()
+                serv = input("Enter new serving quantity: ").strip()
+
+                if serv == "" or serv == recipe.servings:
+                    clear()
+                    print("Servings Attribute did not change.")
+                    continue
+
+                else:
+                    Query.update_recipe("Servings", serv, recipe.recipe_id)
+                    clear()
+                    print("Recipe Servings changed from {old_serv} to {new_serv}.\n".format(old_serv=recipe.servings, new_serv=serv))
+                    recipe.servings = serv
+                    continue
+
+            elif op == 4:
+                clear()
+                diff = input("Enter new difficulty: ")
+
+                if diff == "" or diff == recipe == recipe.difficulty:
+                    clear()
+                    print("Difficulty Attribute did not change.")
+                    continue
+
+                else:
+                    Query.update_recipe("Difficulty", diff, recipe.recipe_id)
+                    clear()
+                    print("Recipe Difficulty changed from {old_diff} to {new_diff}.\n".format(old_diff=recipe.difficulty, new_diff=diff))
+                    recipe.difficulty = diff
+                    continue
+
+            elif op == 5:
+                clear()
+                steps = input("Enter new Steps: ").strip()
+
+                if steps == "" or steps == recipe.steps:
+                    clear()
+                    print("Steps Attribute did not change.")
+                    continue
+
+                else:
+                    Query.update_recipe("Steps", steps, recipe.recipe_id)
+                    clear()
+                    print("Recipe Steps have changed.\n")
+                    recipe.steps = steps
+                    continue
+
+            elif op == 6:
+                clear()
+                time = input("Enter new Cooking Time: ").strip()
+
+                if time == "" or time == str(recipe.cooking_time):
+                    clear()
+                    print("Cooking Time Attribute did not change.")
+                    continue
+
+                else:
+                    Query.update_recipe("Cooking_Time", time, recipe.recipe_id)
+                    clear()
+                    print("Recipe Name changed from {old_time} to {new_time}.\n".format(old_time=recipe.cooking_time, new_time=time))
+                    recipe.cooking_time = time
+                    continue
+
+            elif op == 7:
+                clear()
+                rat = input("Enter new Rating: ").strip()
+
+                if rat == "" or rat == str(recipe.rating):
+                    clear()
+                    print("Rating Attribute did not change.")
+                    continue
+
+                else:
+                    Query.update_recipe("Rating", rat, recipe.recipe_id)
+                    clear()
+                    print("Recipe Rating changed from {old_rat} to {new_rat}.\n".format(old_rat=recipe.rating, new_rat=rat))
+                    recipe.rating = rat
+                    continue
+
             elif op == 8:
                 clear()
                 return True
@@ -420,7 +527,7 @@ def recipe_menu(user: User):
             elif op == 2:
                 clear()
                 display_all_recipes()
-                break
+                continue
             elif op == 3:
                 clear()
                 if display_personal_recipes(user):
@@ -494,6 +601,7 @@ def display_all_items():
         print("========")
 
     input("Press any key to close")
+    clear()
     return True
 
 
