@@ -104,9 +104,10 @@ def search_by_name():
         print("Sorry, there is no " + name)
     else:
         for item in query:
-            print(item)
+            print(create_recipe_from_query(item))
 
     input("Press any key to close")
+    clear()
     return True
 
 
@@ -117,11 +118,13 @@ def search_by_category():
     if not query:
         print("sorry, there are no recipes in " + category)
     else:
+        print("These are the recipes within the " + category + " category: \n")
         for i in query:
-            print(i)
+            print(create_recipe_from_query(i))
             # print(Query.get_recipe_id(i))
 
     input("Press any key to close")
+    clear()
     return True
 
 
@@ -132,11 +135,14 @@ def search_by_ingredients():
     if not query:
         print("sorry, there are no recipes with " + ing)
     else:
+        clear()
+        print("These recipes contain " + ing + ":\n")
         for i in query:
-            print(i)
+            print(create_recipe_from_query(i))
             # print(Query.get_recipe_id(i))
 
     input("Press any key to close")
+    clear()
     return True
 
 
@@ -154,7 +160,7 @@ def search_recipes_menu(user: User):
               "1. Search by Name",
               "2. Search by Ingredients",
               "3. Search by Category",
-              "4. Go Back to Main Menu", sep="\n")
+              "4. Go Back to Recipe Menu", sep="\n")
 
         try:
             op = int(input(">"))
@@ -162,15 +168,15 @@ def search_recipes_menu(user: User):
             if op == 1:
                 clear()
                 search_by_name()
-                break
+                continue
             elif op == 2:
                 clear()
                 search_by_ingredients()
-                break
+                continue
             elif op == 3:
                 clear()
                 search_by_category()
-                break
+                continue
             elif op == 4:
                 return True
         except ValueError:

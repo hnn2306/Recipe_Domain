@@ -178,13 +178,13 @@ def get_recipe_name(name: str):
 
 def get_recipe_cate(cate: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
-                '(SELECT "Recipe_ID" FROM "Categories" where "Category" = %s) ORDER BY Recipe_Name', [cate])
+                '(SELECT "Recipe_ID" FROM "Categories" where "Category" = %s) ORDER BY "Recipe_Name"', [cate])
     return cur.fetchall()
 
 def get_recipe_ing(ing: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
                 '(SELECT "Recipe_ID" FROM "Ingredients" where "Item_ID" IN'
-                '(SELECT "Item_ID" FROM "Item" where "Item_Name" = %s)) ORDER BY Recipe_Name', [ing])
+                '(SELECT "Item_ID" FROM "Item" where "Item_Name" = %s)) ORDER BY "Recipe_Name"', [ing])
     return cur.fetchall()
 
 def sort_recipes_by_category(order):
