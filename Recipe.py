@@ -1,3 +1,6 @@
+
+
+
 class Recipe:
     def __init__(self, recipe_id, name, description, servings, difficulty, steps, cooking_time, rating, username, categories, ingredients):
         self.recipe_id = recipe_id
@@ -14,6 +17,7 @@ class Recipe:
 
     def __str__(self):
         builder = "Recipe #{id}".format(id = self.recipe_id) + "\n"
+        builder += "---------------------------------------------------\n"
         builder += ("Name: {name}".format(name = self.name) + "\n")
         builder += ("Description: " + self.description) + "\n"
         builder += ("{d} servings".format(d = self.servings)) + "\n"
@@ -22,4 +26,14 @@ class Recipe:
         builder += ("Time: {time} minutes".format(time = self.cooking_time)) + "\n"
         builder += ("Rating: " + '\u2605'*self.rating) + "\n"
         builder += ("Created by: {user}".format(user = self.username)) + "\n"
+
+        # iterate over all ingredients and add to builder
+        builder += "Ingredients:\n"
+        for ing in self.ingredients:
+            builder += ("    - {amount} {name}".format(name=ing, amount=self.ingredients[ing]) + "\n")
+
+        # iterate over all categories and add
+        builder += "Categories: \n"
+        for cat in self.categories:
+            builder += ("    - " + cat + "\n")
         return builder

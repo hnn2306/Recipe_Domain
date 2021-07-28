@@ -31,10 +31,11 @@ def create_recipe(recipe_id, name, description, servings, difficulty, steps, coo
 
 def update_recipe(attribute, change, recipe_id):
     try:
-        cur.execute('UPDATE "Recipe" SET "%s" = "%s" WHERE "Recipe_ID" = %s', attribute, change, recipe_id)
+        cur.execute(('UPDATE "Recipe" SET "' + str(attribute) + '" = %s WHERE "Recipe_ID" = %s'), [change, recipe_id])
         conn.commit()
 
-    except:
+    except Exception as e:
+        print(e)
         print("Could not update recipe")
 
 
@@ -80,7 +81,7 @@ def get_ingredient(ing):
 
 def create_ingredient(item_id, id):
     try:
-        cur.execute("INSERT INTO 'Ingredients' ('Item_ID', 'Recipe_ID') VALUES(%s, %s)", (item_id, id))
+        cur.execute('INSERT INTO "Ingredients" ("Item_ID", "Recipe_ID") VALUES(%s, %s)', (item_id, id))
         conn.commit()
 
     except:
@@ -89,7 +90,7 @@ def create_ingredient(item_id, id):
 
 def delete_ingredient(id):
     try:
-        cur.execute("DELETE FROM 'Ingredients' WHERE 'Recipe_ID' = %s", id)
+        cur.execute('DELETE FROM "Ingredients" WHERE "Recipe_ID" = %s', id)
         conn.commit()
 
     except:
@@ -98,7 +99,7 @@ def delete_ingredient(id):
 
 def create_category(cat, id):
     try:
-        cur.execute("INSERT INTO 'Categories' ('Category', 'Recipe_ID') VALUES(%s, $s)", (cat, id))
+        cur.execute('INSERT INTO "Categories" ("Category", "Recipe_ID") VALUES(%s, $s)', (cat, id))
         conn.commit()
 
     except:
@@ -107,7 +108,7 @@ def create_category(cat, id):
 
 def delete_category(id):
     try:
-        cur.execute("DELETE FROM 'Categories' WHERE 'Recipe_ID' = %s", id)
+        cur.execute('DELETE FROM "Categories" WHERE "Recipe_ID" = %s', id)
         conn.commit()
 
     except:
@@ -151,6 +152,7 @@ def get_users():
     except:
         print("Could not get Users")
 
+
 def get_user(username: str):
 
     cur.execute('SELECT * FROM "User" where "Username" = %s', [username])
@@ -171,7 +173,7 @@ def get_user_recipe(name: str):
 
 
 def get_recipe_name(name: str):
-    cur.execute('SELECT * FROM "Recipe" where "Recipe_Name" ~* %s ORDER BY Recipe_Name', [name] )
+    cur.execute('SELECT * FROM "Recipe" where "Recipe_Name" ~* %s ORDER BY "Recipe_Name"', [name])
     return cur.fetchall()
 
 def get_recipe_cate(cate: str):
@@ -257,3 +259,32 @@ def update_user_pass(id: str, passw: str):
     except Exception as e:
         # print(e)
         return False
+
+
+def get_categories_of_recipe(id: int):
+    try:
+        cur.execute('SELECT * From "Categories" WHERE "Recipe_ID" = %s', [id])
+        return cur.fetchall()
+
+    except Exception as e:
+        print(e)
+        return False
+
+
+def get_ingredients_of_recipe(id: int):
+    try:
+        cur.execute('SELECT * From "Ingredients" WHERE "Recipe_ID" = %s', [id])
+        return cur.fetchall()
+
+    except Exception as e:
+        return False
+
+
+def get_item_by_id(id: int):
+    try:
+        cur.execute('SELECT "Item_Name" FROM "Item" WHERE "Item_ID" = %s', [id])
+        return cur.fetchall()
+
+    except Exception as e:
+        return False
+

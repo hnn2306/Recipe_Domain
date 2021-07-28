@@ -40,7 +40,9 @@ def display_all_recipes():
 def get_all_recipes(query):
     """
     gets all the recipes from the given query and creates object with it
-    :param query: query to get recipes from
+    by calling another method
+    pre: this receives multiple recipes within the same query
+    :param query: query containing multiple recipes
     :return: array of recipe objects
     """
     recs = []
@@ -51,13 +53,12 @@ def get_all_recipes(query):
 
     for rec in query:
         # print(rec)
-        receta = Recipe(int(rec[0]), rec[1], rec[2], int(rec[3]), rec[4], rec[5], int(rec[6]), int(rec[7]), rec[8], [], [])
-        # TODO get the ingredients and categories
+        receta = create_recipe_from_query(rec)
         recs.append(receta)
     return recs
 
 
-def create_recipe(user: User):
+def create_recipe(user: User):  # TODO
     """
     creates a recipe and prompts the user for the specific attributes
     :param user: user logged in
@@ -71,11 +72,11 @@ def create_recipe(user: User):
 
     des = input("Description: ")
     serv = input("Number of Servings: ")
-    diff = input("Difficulty: ")
+    diff = input("Difficulty (Easy, Medium, Hard): ")
     steps = input("Steps: ")
     time = input("Time: ")
-    rating = input("Rating: ")
-    ing = input("Enter ingredients separated by ','\n>")
+    rating = input("Rating (1-5): ")
+    ing = input("Enter ingredients in the format <Name:quantity> and separate with ','\n>")
     ingredients = ing.split(",")
     cat = input("Enter categories separated by ','\n>")
     categories = cat.split(",")
@@ -274,19 +275,89 @@ def cook_recipe(user: User):
     return True
 
 
+def create_recipe_from_query(query: tuple) -> Recipe:
+    """
+    creates a recipe object from a given query element
+    pre: the query is expected to be a single recipe. If the
+    recipe might contain more than one recipe, it must be looped an
+    passed one by one. see method get_all_recipes()
+    :param query: query string
+    :return: the recipe object
+    """
+
+    id = int(query[0])
+
+    # get all the categories that correspond to this recipe
+    cat_query = Query.get_categories_of_recipe(id)
+    cats = []  # categories of this recipe
+    if cat_query is not []:
+        for cat in cat_query:
+            cats.append(cat[1])
+
+    # get all the ingredients that correspond to this recipe
+    ing_query = Query.get_ingredients_of_recipe(id)
+    ing = dict()  # dictionary that will contain all ingredients and quantity needed
+    if ing_query is not None:
+        for i in ing_query:
+            item_name = Query.get_item_by_id(i[0])[0][0]
+            amount = i[2]
+            ing[item_name] = amount
+
+    # create the item
+    receta = Recipe(id, query[1], query[2], int(query[3]), query[4], query[5], int(query[6]),
+            int(query[7]), query[8], cats, ing)
+
+    return receta
+
+
 def find_recipe_to_edit() -> Recipe:
     """
     gives the user options of finding a recipe so they can edit it
-    :return: the recipe once found
+    :return: the recipe once found or None if none selected
     """
 
+    while True:
+        print("Chose an option",
+              "================",
+              "1. Find recipe by name",
+              "2. Go Back", sep="\n")
 
-def edit_a_recipe_menu():
+        try:
+            op = int(input("> ").strip())
+
+            if op == 1:
+                clear()
+                name = input("Enter recipe Name: ").strip()
+                recipe_query = Query.get_recipe_name(name)
+
+                if recipe_query != [] and len(recipe_query) == 1:
+                    # only one recipe expected from query since name is unique
+                    recipe_obj = create_recipe_from_query(recipe_query[0])
+                    return recipe_obj
+                else:
+                    clear()
+                    print("Recipe {n} does not exist. Try again".format(n=name))
+                    return None
+
+            elif op == 2:
+                # goes back with no recipe
+                return None
+
+        except ValueError:
+            clear()
+            print("Incorrect option. Try again\n")
+            continue
+
+
+def edit_a_recipe_menu(recipe: Recipe):
     """
     allows the user to edit attributes of a recipe
     :return: TODO
     """
     while True:
+        print("Recipe Selected: ")
+        print(recipe)
+
         print("Chose an option",
               "================",
               "1. Edit Recipe Name",
@@ -296,16 +367,27 @@ def edit_a_recipe_menu():
               "5. Edit Steps",
               "6. Edit Cooking Time",
               "7. Edit Rating (1-5)",
-              "8. Go Back")
+              "8. Go Back to Recipe Menu", sep="\n")
 
         try:
             op = int(input("> ").strip())
+
+            if op == 1:
+                clear()
+                name = input("Enter new name: ")
+                Query.update_recipe("Recipe_Name", name, recipe.recipe_id)
+                clear()
+                print("Recipe Name changed from {rec_name} to {new_name}\n".format(rec_name=recipe.name, new_name=name))
+                recipe.name = name
+                continue
+            elif op == 8:
+                clear()
+                return True
 
         except ValueError:
             clear()
             print("Incorrect option. Try again\n")
             continue
-
 
 
 def recipe_menu(user: User):
@@ -365,6 +447,14 @@ def recipe_menu(user: User):
                 break
             elif op == 7:
                 clear()
+                # get the recipe and pass to edit menu
+                recipe = find_recipe_to_edit()
+                if recipe is None:
+                    continue
+                elif isinstance(recipe, Recipe):
+                    clear()
+                    if edit_a_recipe_menu(recipe):
+                        continue
 
             elif op == 8:
                 return True
