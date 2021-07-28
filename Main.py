@@ -266,13 +266,14 @@ def sort_recipes_menu(user: User):
 
 
 def cook_recipe(user: User):
-    while True:
-        try:
-            recipeID = int(input("Enter the recipe ID of the recipe you would like to cook: "))
-            break
-        except ValueError:
-            print("Invalid input. Try again.")
-
+    # changed this to prompt for the name instead
+    # while True:
+    #     try:
+    #         recipeID = int(input("Enter the recipe ID of the recipe you would like to cook: "))
+    #         break
+    #     except ValueError:
+    #         print("Invalid input. Try again.")
+    recipe = find_recipe_to_edit()
     while True:
         try:
             scale = int(input("Enter the scale of how much you would like to cook of this recipe: "))
@@ -280,7 +281,7 @@ def cook_recipe(user: User):
         except ValueError:
             print("Invalid input. Try again.")
 
-    Query.mark_recipe(user.ID, recipeID, scale)
+    Query.mark_recipe(user.ID, recipe.recipe_id, scale)
     return True
 
 
@@ -339,7 +340,7 @@ def find_recipe_to_edit() -> Recipe:
                 name = input("Enter recipe Name: ").strip()
                 recipe_query = Query.get_recipe_name(name)
 
-                if recipe_query != [] and len(recipe_query) == 1:
+                if recipe_query != [] and len(recipe_query) >= 1:
                     # only one recipe expected from query since name is unique
                     recipe_obj = create_recipe_from_query(recipe_query[0])
                     return recipe_obj
@@ -358,7 +359,7 @@ def find_recipe_to_edit() -> Recipe:
             continue
 
 
-def edit_a_recipe_menu(recipe: Recipe):
+def edit_a_recipe_menu(recipe: Recipe, user: User):
     """
     allows the user to edit attributes of a recipe
     :return:
@@ -376,7 +377,8 @@ def edit_a_recipe_menu(recipe: Recipe):
               "5. Edit Steps",
               "6. Edit Cooking Time",
               "7. Edit Rating (1-5)",
-              "8. Go Back to Recipe Menu", sep="\n")
+              "8. Delete Recipe",
+              "9. Go Back to Recipe Menu", sep="\n")
 
         try:
             op = int(input("> ").strip())
@@ -495,6 +497,15 @@ def edit_a_recipe_menu(recipe: Recipe):
 
             elif op == 8:
                 clear()
+                if recipe.username != user.username:
+                    print("You cannot delete this recipe.")
+                else:
+                    Query.delete_recipe(recipe.recipe_id)
+                    return True
+                continue
+
+            elif op == 9:
+                clear()
                 return True
 
         except ValueError:
@@ -566,7 +577,7 @@ def recipe_menu(user: User):
                     continue
                 elif isinstance(recipe, Recipe):
                     clear()
-                    if edit_a_recipe_menu(recipe):
+                    if edit_a_recipe_menu(recipe, user):
                         continue
 
             elif op == 8:

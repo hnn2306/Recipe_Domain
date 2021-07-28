@@ -43,13 +43,12 @@ def update_recipe(attribute, change, recipe_id):
 
 
 def delete_recipe(recipe_id):
-    delete_category(recipe_id)
-    delete_ingredient(recipe_id)
+
     try:
-        cur.execute('DELETE FROM "Recipe" WHERE "Recipe_ID" = %s', recipe_id)
+        cur.execute('DELETE FROM "Recipe" WHERE "Recipe_ID" = %s', [recipe_id])
         conn.commit()
 
-    except:
+    except Exception:
         print("Could not delete recipe")
 
 
