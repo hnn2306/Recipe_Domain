@@ -23,10 +23,13 @@ def create_recipe(recipe_id, name, description, servings, difficulty, steps, coo
         create_category(cat, recipe_id)
 
     for ing in ingredients:
-        result = get_ingredient(ing)
-        if result.rows.length >= 1:
-            item_id = result.rows[0].Item_ID
-            create_ingredient(item_id, recipe_id)
+        item = ing.split(":")
+        item_name = item[0]
+        quantity = item[1]
+        result = get_ingredient(item_name)
+        if result != [] and len(result[0]) >= 1:
+            item_id = result[0][0]
+            create_ingredient(item_id, recipe_id, quantity)
 
 
 def update_recipe(attribute, change, recipe_id):
@@ -71,17 +74,16 @@ def update_user(id):
 
 def get_ingredient(ing):
     try:
-        cur.execute('SELECT "Item"."Item_ID" FROM "Item", "Ingredients" WHERE "Ingredients"."Item_ID" = '
-                    '"Item"."Item_ID" AND "Item"."Item_Name" = %s', ing)
+        cur.execute('SELECT "Item"."Item_ID" FROM "Item" WHERE "Item_Name" = %s', [ing])
         return cur.fetchall()
 
     except:
         print("Can't grab ingredient")
 
 
-def create_ingredient(item_id, id):
+def create_ingredient(item_id, id, quantity):
     try:
-        cur.execute('INSERT INTO "Ingredients" ("Item_ID", "Recipe_ID") VALUES(%s, %s)', (item_id, id))
+        cur.execute('INSERT INTO "Ingredients" ("Item_ID", "Recipe_ID", "Quantity_Needed") VALUES(%s, %s, %s)', (item_id, id, quantity))
         conn.commit()
 
     except:
@@ -176,10 +178,12 @@ def get_recipe_name(name: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_Name" ~* %s ORDER BY "Recipe_Name"', [name])
     return cur.fetchall()
 
+
 def get_recipe_cate(cate: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
                 '(SELECT "Recipe_ID" FROM "Categories" where "Category" = %s) ORDER BY "Recipe_Name"', [cate])
     return cur.fetchall()
+
 
 def get_recipe_ing(ing: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
@@ -187,11 +191,13 @@ def get_recipe_ing(ing: str):
                 '(SELECT "Item_ID" FROM "Item" where "Item_Name" = %s)) ORDER BY "Recipe_Name"', [ing])
     return cur.fetchall()
 
+
 def sort_recipes_by_category(order):
     cur.execute('SELECT * FROM "Recipe" as "r"'
                 'JOIN "Categories" as "c" on c."Recipe_ID" = r."Recipe_ID"'
-                'ORDER BY "Category" %s', [order])
+                'ORDER BY "Categories" %s', [order])
     return cur.fetchall()
+
 
 def sort_recipes_by_alphabetical(order):
     cur.execute('ALTER TABLE "Recipe" ORDER BY "Recipe_Name" %s', [order])
@@ -241,7 +247,13 @@ def mark_recipe(userID, recipeID, scale):
     return True
 
 
-def update_user_name(id: str, name: str):
+def update_user_name(id: str, name: str) -> bool:
+    """
+    query to update username
+    :param id: id of the user
+    :param name: new name to make update
+    :return: boolean if the query is successful, false otherwise
+    """
     try:
         cur.execute('UPDATE "User" SET "Username" = %s WHERE "User_ID" = %s', (name, id))
         conn.commit()
@@ -251,7 +263,13 @@ def update_user_name(id: str, name: str):
         return False
 
 
-def update_user_pass(id: str, passw: str):
+def update_user_pass(id: str, passw: str) -> bool:
+    """
+    query that updates user password
+    :param id: id of the user
+    :param passw: password to make te update
+    :return: boolean if the query is successful, false otherwise
+    """
     try:
         cur.execute('UPDATE "User" SET "Password" = %s WHERE "User_ID" = %s', (passw, id))
         conn.commit()
@@ -261,30 +279,31 @@ def update_user_pass(id: str, passw: str):
         return False
 
 
-def get_categories_of_recipe(id: int):
-    try:
-        cur.execute('SELECT * From "Categories" WHERE "Recipe_ID" = %s', [id])
-        return cur.fetchall()
-
-    except Exception as e:
-        print(e)
-        return False
-
-
-def get_ingredients_of_recipe(id: int):
-    try:
-        cur.execute('SELECT * From "Ingredients" WHERE "Recipe_ID" = %s', [id])
-        return cur.fetchall()
-
-    except Exception as e:
-        return False
+def get_categories_of_recipe(id: int) -> []:
+    """
+    returns a list of categories that a recipe belongs to
+    :param id: id of the recipe
+    :return: collection of categories; [] if None
+    """
+    cur.execute('SELECT * From "Categories" WHERE "Recipe_ID" = %s', [id])
+    return cur.fetchall()
 
 
-def get_item_by_id(id: int):
-    try:
-        cur.execute('SELECT "Item_Name" FROM "Item" WHERE "Item_ID" = %s', [id])
-        return cur.fetchall()
+def get_ingredients_of_recipe(id: int) -> []:
+    """
+    gets the ingredients of a given recipe
+    :param id: id of the recipe
+    :return: collection of ingredients; [] if None found
+    """
+    cur.execute('SELECT * From "Ingredients" WHERE "Recipe_ID" = %s', [id])
+    return cur.fetchall()
 
-    except Exception as e:
-        return False
 
+def get_item_by_id(id: int) -> []:
+    """
+    finds an item given an ID
+    :param id: id of the item
+    :return: item if found. Though item is always guaranteed to exist since we have its ID
+    """
+    cur.execute('SELECT "Item_Name" FROM "Item" WHERE "Item_ID" = %s', [id])
+    return cur.fetchall()
