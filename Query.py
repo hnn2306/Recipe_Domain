@@ -173,43 +173,62 @@ def get_user_recipe(name: str):
     return cur.fetchall()
 
 
-def get_recipe_name(name: str):
+def get_recipe_by_name(name: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_Name" ~* %s ORDER BY "Recipe_Name"', [name])
     return cur.fetchall()
 
 
-def get_recipe_cate(cate: str):
+def get_recipe_by_cate(cate: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
                 '(SELECT "Recipe_ID" FROM "Categories" where "Category" = %s) ORDER BY "Recipe_Name"', [cate])
     return cur.fetchall()
 
 
-def get_recipe_ing(ing: str):
+def get_recipe_by_ing(ing: str):
     cur.execute('SELECT * FROM "Recipe" where "Recipe_ID" IN '
                 '(SELECT "Recipe_ID" FROM "Ingredients" where "Item_ID" IN'
                 '(SELECT "Item_ID" FROM "Item" where "Item_Name" = %s)) ORDER BY "Recipe_Name"', [ing])
     return cur.fetchall()
 
 
-def sort_recipes_by_category(order):
+def sort_recipes_by_category_ASC():
     cur.execute('SELECT * FROM "Recipe" as "r"'
                 'JOIN "Categories" as "c" on c."Recipe_ID" = r."Recipe_ID"'
-                'ORDER BY "Categories" %s', [order])
+                'ORDER BY "Category" ASC')
+
+    return cur.fetchall()
+
+def sort_recipes_by_category_DESC():
+    cur.execute('SELECT * FROM "Recipe" as "r"'
+                'JOIN "Categories" as "c" on c."Recipe_ID" = r."Recipe_ID"'
+                'ORDER BY "Category" DESC')
     return cur.fetchall()
 
 
-def sort_recipes_by_alphabetical(order):
-    cur.execute('ALTER TABLE "Recipe" ORDER BY "Recipe_Name" %s', [order])
+def sort_recipes_by_alphabetical_ASC():
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Recipe_Name" ASC')
+    return get_recipe()
+
+def sort_recipes_by_alphabetical_DESC():
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Recipe_Name" DESC')
     return get_recipe()
 
 
-def sort_recipes_by_rating(order):
-    cur.execute('ALTER TABLE "Recipe" ORDER BY "Rating" %s', [order])
+def sort_recipes_by_rating_ASC():
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Rating" ASC')
+    return get_recipe()
+
+def sort_recipes_by_rating_DESC():
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Rating" DESC')
     return get_recipe()
 
 
-def sort_recipes_by_recency(order):
-    cur.execute('ALTER TABLE "Recipe" ORDER BY "Creation_Date" %s', [order])
+def sort_recipes_by_recency_ASC():
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Creation_Date" ASC')
+    return get_recipe()
+
+def sort_recipes_by_recency_DESC():
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Creation_Date" DESC')
     return get_recipe()
 
 

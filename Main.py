@@ -98,7 +98,7 @@ def create_recipe(user: User):  # TODO
 
 def search_by_name():
     name = input("Enter name: ")
-    query = Query.get_recipe_name(name)
+    query = Query.get_recipe_by_name(name)
 
     if not query:
         print("Sorry, there is no " + name)
@@ -113,7 +113,7 @@ def search_by_name():
 
 def search_by_category():
     category = input("Enter category: ")
-    query = Query.get_recipe_cate(category)
+    query = Query.get_recipe_by_cate(category)
 
     if not query:
         print("sorry, there are no recipes in " + category)
@@ -130,7 +130,7 @@ def search_by_category():
 
 def search_by_ingredients():
     ing = input("Enter one ingredient: ")
-    query = Query.get_recipe_ing(ing)
+    query = Query.get_recipe_by_ing(ing)
 
     if not query:
         print("sorry, there are no recipes with " + ing)
@@ -194,24 +194,34 @@ def sort(sort_type):
             print("Invalid option. Try again.\n")
             continue
 
-    query = None
-    if sort_type == "category":
-        query = Query.sort_recipes_by_category(order)
-    elif sort_type == "alphabetical":
-        query = Query.sort_recipes_by_alphabetical(order)
-    elif sort_type == "rating":
-        query = Query.sort_recipes_by_rating(order)
-    elif sort_type == "recency":
-        query = Query.sort_recipes_by_recency(order)
+        query = None
+        if order == "ASC":
+            if sort_type == "category":
+                query = Query.sort_recipes_by_category_ASC()
+            elif sort_type == "alphabetical":
+                query = Query.sort_recipes_by_alphabetical_ASC()
+            elif sort_type == "rating":
+                query = Query.sort_recipes_by_rating_ASC()
+            elif sort_type == "recency":
+                query = Query.sort_recipes_by_recency_ASC()
+        elif order == "DESC":
+            if sort_type == "category":
+                query = Query.sort_recipes_by_category_DESC()
+            elif sort_type == "alphabetical":
+                query = Query.sort_recipes_by_alphabetical_DESC()
+            elif sort_type == "rating":
+                query = Query.sort_recipes_by_rating_DESC()
+            elif sort_type == "recency":
+                query = Query.sort_recipes_by_recency_DESC()
 
-    if query is not None:
-        for i in query:
-            print(i)
-    else:
-        print("Sort Unsuccessful")
+        if query is not None:
+            for i in query:
+                print(create_recipe_from_query(i))
+        else:
+            print("Sort Unsuccessful")
 
-    input("Press any key to close")
-    return True
+        input("Press any key to close")
+        return True
 
 
 def sort_recipes_menu(user: User):
