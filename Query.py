@@ -207,29 +207,29 @@ def sort_recipes_by_category_DESC():
 
 def sort_recipes_by_alphabetical_ASC():
     cur.execute('SELECT * FROM "Recipe" ORDER BY "Recipe_Name" ASC')
-    return get_recipe()
+    return cur.fetchall()
 
 def sort_recipes_by_alphabetical_DESC():
     cur.execute('SELECT * FROM "Recipe" ORDER BY "Recipe_Name" DESC')
-    return get_recipe()
-
+    return cur.fetchall()
 
 def sort_recipes_by_rating_ASC():
     cur.execute('SELECT * FROM "Recipe" ORDER BY "Rating" ASC')
-    return get_recipe()
+    return cur.fetchall()
 
 def sort_recipes_by_rating_DESC():
     cur.execute('SELECT * FROM "Recipe" ORDER BY "Rating" DESC')
-    return get_recipe()
+    return cur.fetchall()
 
 
 def sort_recipes_by_recency_ASC():
-    cur.execute('SELECT * FROM "Recipe" ORDER BY "Creation_Date" ASC')
-    return get_recipe()
+
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Creation_Date" DESC')
+    return cur.fetchall()
 
 def sort_recipes_by_recency_DESC():
-    cur.execute('SELECT * FROM "Recipe" ORDER BY "Creation_Date" DESC')
-    return get_recipe()
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Creation_Date" ASC')
+    return cur.fetchall()
 
 
 def mark_recipe(userID, recipeID, scale):
