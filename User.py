@@ -4,6 +4,7 @@ class User:
         self.password = password
         self.ID = ID
 
+
     @property
     def username(self) -> str:
         return self._username
@@ -19,6 +20,10 @@ class User:
     @password.setter
     def password(self, password):
         self._password = password
+
+    @property
+    def id(self) -> int:
+        return self.ID
 
     def __str__(self) -> str:
         return "User {username: " + self.username + ", password: " + self.password + ", ID: " + str(self.ID)

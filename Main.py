@@ -542,8 +542,7 @@ def recipe_menu(user: User):
               "5. Search Recipes",
               "6. Cook Recipe",
               "7. Edit a Recipe",
-              "8. Get a Recommendation",
-              "9. Go Back to Main Menu", sep="\n")
+              "8. Go Back to Main Menu", sep="\n")
 
         try:
             op = int(input(">"))
@@ -592,12 +591,8 @@ def recipe_menu(user: User):
                     clear()
                     if edit_a_recipe_menu(recipe, user):
                         continue
+
             elif op == 8:
-                clear()
-                if get_a_recommendation(user):
-                    continue
-                break
-            elif op == 9:
                 return True
         except ValueError:
             clear()
@@ -616,23 +611,37 @@ def get_a_recommendation(user: User):
     clear()
     return True
 
-def edit_pantry():
-    pass
-
-
 def add_pantry_item():
     name = input("Enter name: ")
     aisle = input("Enter aisle: ")
     exdate = input("Enter expire date (YYYY-MM-DD): ")
-
-    query = Query.get_items()
+    quanity = input("Enter how item quantity: ")
 
 
     next_id = len(Query.get_items()) + 1
     Query.create_item(next_id, aisle, name, exdate)
     print("item created")
-    # if query != []:
-        # todo if the item exist in pantry, update the track
+    Query.create_track(quanity, quanity, user.id, next_id)
+
+    input("Press any key to close")
+    clear()
+    return True
+
+
+def edit_pantry():
+    name = input("Enter name of item you want to update: ")
+    quantity = input("Enter the item quantity that you want to update: ")
+
+    query = Query.get_item_ID_by_name(name)
+    if query != []:
+        Query.update_track(query[0], quantity)
+        print("Updated the item quantity")
+    else:
+        print("Item doesn't exit")
+
+    input("Press any key to close")
+    clear()
+    return True
 
 
 def display_all_items():
@@ -670,15 +679,12 @@ def pantry_menu(user: User):
             if op == 1:
                 clear()
                 display_all_items()
-                #todo I need to change this to getting pantry of user
             elif op == 2:
                 clear()
-                #todo
-                return True
+                edit_pantry()
             elif op == 3:
                 clear()
-                #todo
-                return True
+                add_pantry_item(user)
             elif op == 4:
                 return True
         except ValueError:
@@ -827,7 +833,7 @@ def login():
             # print(query)
             # time.sleep(5)
             user = User(username, password, query[0][4])
-
+            Query.update_user(username)
             if inner_menu(user):
                 return True
 
