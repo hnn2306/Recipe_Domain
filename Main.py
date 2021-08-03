@@ -598,19 +598,37 @@ def recipe_menu(user: User):
             continue
 
 
-def add_pantry_item():
+def add_pantry_item(user: User):
     name = input("Enter name: ")
     aisle = input("Enter aisle: ")
     exdate = input("Enter expire date (YYYY-MM-DD): ")
-
-    query = Query.get_items()
+    quanity = input("Enter how item quantity: ")
 
 
     next_id = len(Query.get_items()) + 1
     Query.create_item(next_id, aisle, name, exdate)
     print("item created")
-    # if query != []:
-        # todo if the item exist in pantry, update the track
+    Query.create_track(quanity, quanity, user.id, next_id)
+
+    input("Press any key to close")
+    clear()
+    return True
+
+
+def edit_pantry():
+    name = input("Enter name of item you want to update: ")
+    quantity = input("Enter the item quantity that you want to update: ")
+
+    query = Query.get_item_ID_by_name(name)
+    if query != []:
+        Query.update_track(query[0], quantity)
+        print("Updated the item quantity")
+    else:
+        print("Item doesn't exit")
+
+    input("Press any key to close")
+    clear()
+    return True
 
 
 def display_all_items():
@@ -648,15 +666,12 @@ def pantry_menu(user: User):
             if op == 1:
                 clear()
                 display_all_items()
-                #todo I need to change this to getting pantry of user
             elif op == 2:
                 clear()
-                #todo
-                return True
+                edit_pantry()
             elif op == 3:
                 clear()
-                #todo
-                return True
+                add_pantry_item(user)
             elif op == 4:
                 return True
         except ValueError:

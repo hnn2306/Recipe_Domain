@@ -65,7 +65,7 @@ def create_user(username, password, id):
 
 def update_user(name):
     try:
-        cur.execute('UPDATE "User" SET "Last_Access_Date" = %s where "Username" = %s', date.today(), name)
+        cur.execute('UPDATE "User" SET "Last_Access_Date" = %s where "Username" = %s', [date.today(), name])
         conn.commit()
     except:
         print("Could not update user")
@@ -133,8 +133,20 @@ def get_items():
         print("Could not get Items")
 
 
-def update_track():
-    pass
+def update_track(id, value):
+    try:
+        cur.execute('UPDATE "Track" SET "Current_Quantity" = %s where "Item_ID" = %s', [value, id])
+        conn.commit()
+    except:
+        print("Could not update item")
+
+def create_track(quanBought, currQuant, ownerID, itemID):
+    try:
+        cur.execute('INSERT INTO "Track" ("Purchase_Date", "Quantity_Bought", "Curent_Quantity", "Owner_User_ID", "Item_ID" ) VALUES (%s, %s, %s, %s, %s)',
+                    (date.today(), quanBought, currQuant, ownerID, itemID ))
+        conn.commit()
+    except:
+        print("Could not create item")
 
 
 def get_track():
@@ -325,3 +337,7 @@ def get_item_by_id(id: int) -> []:
     cur.execute('SELECT "Item_Name" FROM "Item" WHERE "Item_ID" = %s', [id])
     return cur.fetchall()
 
+
+def get_item_ID_by_name(name: str):
+    cur.execute('SELECT "Item_ID" FROM "Item" WHERE "Item_Name" = %s', [name])
+    return cur.fetchall()
