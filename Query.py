@@ -63,9 +63,9 @@ def create_user(username, password, id):
         print("Can't create user")
 
 
-def update_user(id):
+def update_user(name):
     try:
-        cur.execute('UPDATE "User" SET "Last_Access_Date" = %s where "User_ID" = %s', date.today(), id)
+        cur.execute('UPDATE "User" SET "Last_Access_Date" = %s where "Username" = %s', date.today(), name)
         conn.commit()
     except:
         print("Could not update user")
@@ -223,7 +223,6 @@ def sort_recipes_by_rating_DESC():
 
 
 def sort_recipes_by_recency_ASC():
-
     cur.execute('SELECT * FROM "Recipe" ORDER BY "Creation_Date" DESC')
     return cur.fetchall()
 
@@ -247,7 +246,7 @@ def mark_recipe(userID, recipeID, scale):
                         'AND "Item_ID" = %s', (recipeID, i[0]))
             neededQuantity = cur.fetchone()[0]
             scaledQuantity = neededQuantity * scale
-            cur.execute('SELECT "Current_Quantity" FROM "Track" WHERE "User_ID" = %s AND "Item_ID" = %s', (userID, i[0]))
+            cur.execute('SELECT "Current_Quantity" FROM "Track" WHERE "Owner_User_ID" = %s AND "Item_ID" = %s', (userID, i[0]))
             quantityOwned = cur.fetchone()
             if quantityOwned is None or len(quantityOwned) == 0:
                 print("Not enough quantity to make recipe.")
@@ -256,7 +255,7 @@ def mark_recipe(userID, recipeID, scale):
             quantityRemaining = quantityOwned - scaledQuantity
             if quantityRemaining >= 0:
                 cur.execute('UPDATE "Track" SET "Current_Quantity" = %s'
-                            'WHERE "User_ID" = %s AND "Item_ID" = %s', (quantityRemaining, userID, i))
+                            'WHERE "Owner_User_ID" = %s AND "Item_ID" = %s', (quantityRemaining, userID, i))
             else:
                 print("Not enough quantity to make recipe.")
                 return False
@@ -325,3 +324,4 @@ def get_item_by_id(id: int) -> []:
     """
     cur.execute('SELECT "Item_Name" FROM "Item" WHERE "Item_ID" = %s', [id])
     return cur.fetchall()
+

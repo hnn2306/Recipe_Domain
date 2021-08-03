@@ -348,7 +348,7 @@ def find_recipe_to_edit() -> Recipe:
             if op == 1:
                 clear()
                 name = input("Enter recipe Name: ").strip()
-                recipe_query = Query.get_recipe_name(name)
+                recipe_query = Query.get_recipe_by_name(name)
 
                 if recipe_query != [] and len(recipe_query) >= 1:
                     # only one recipe expected from query since name is unique
@@ -598,10 +598,6 @@ def recipe_menu(user: User):
             continue
 
 
-def edit_pantry():
-    pass
-
-
 def add_pantry_item():
     name = input("Enter name: ")
     aisle = input("Enter aisle: ")
@@ -809,7 +805,7 @@ def login():
             # print(query)
             # time.sleep(5)
             user = User(username, password, query[0][4])
-
+            Query.update_user(username)
             if inner_menu(user):
                 return True
 
