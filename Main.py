@@ -96,7 +96,7 @@ def create_recipe(user: User):  # TODO
     #TODO what to do with the recipe object??
 
 
-def search_by_name():
+def search_by_name(user:User):
     name = input("Enter name: ")
     query = Query.get_recipe_by_name(name)
 
@@ -104,7 +104,9 @@ def search_by_name():
         print("Sorry, there is no " + name)
     else:
         for item in query:
-            print(create_recipe_from_query(item))
+            recipe = create_recipe_from_query(item)
+            Query.add_to_history(user.ID, recipe.recipe_id)
+            print(recipe)
 
     input("Press any key to close")
     clear()
@@ -167,7 +169,7 @@ def search_recipes_menu(user: User):
 
             if op == 1:
                 clear()
-                search_by_name()
+                search_by_name(user)
                 continue
             elif op == 2:
                 clear()
@@ -348,7 +350,7 @@ def find_recipe_to_edit() -> Recipe:
             if op == 1:
                 clear()
                 name = input("Enter recipe Name: ").strip()
-                recipe_query = Query.get_recipe_name(name)
+                recipe_query = Query.get_recipe_by_name(name)
 
                 if recipe_query != [] and len(recipe_query) >= 1:
                     # only one recipe expected from query since name is unique
@@ -540,7 +542,8 @@ def recipe_menu(user: User):
               "5. Search Recipes",
               "6. Cook Recipe",
               "7. Edit a Recipe",
-              "8. Go Back to Main Menu", sep="\n")
+              "8. Get a Recommendation",
+              "9. Go Back to Main Menu", sep="\n")
 
         try:
             op = int(input(">"))
@@ -589,14 +592,29 @@ def recipe_menu(user: User):
                     clear()
                     if edit_a_recipe_menu(recipe, user):
                         continue
-
             elif op == 8:
+                clear()
+                if get_a_recommendation(user):
+                    continue
+                break
+            elif op == 9:
                 return True
         except ValueError:
             clear()
             print("Incorrect option. Try again\n")
             continue
 
+
+def get_a_recommendation(user: User):
+    rec = Query.get_case_two_rec(user.username)
+    if rec != []:
+        print("We recommend: ")
+        print(create_recipe_from_query(rec[0]))
+    else:
+        print("there are no recommendations available")
+    input("Press any key to close")
+    clear()
+    return True
 
 def edit_pantry():
     pass

@@ -325,3 +325,38 @@ def get_item_by_id(id: int) -> []:
     """
     cur.execute('SELECT "Item_Name" FROM "Item" WHERE "Item_ID" = %s', [id])
     return cur.fetchall()
+
+def add_to_history(user_id, recipe_id):
+    cur.execute('INSERT INTO "History" ("User_ID", "Recipe_ID") VALUES (%s, %s)', [user_id, recipe_id])
+    conn.commit()
+
+
+def get_case_one_rec(username: str):
+    """
+    Recommends the highest rated recipe from the food category the user likes the most
+    :return: TODO
+    """
+    query = """SELECT *
+From "Recipe", "Categories"
+WHERE "Author_Username" = %s
+  AND "Recipe"."Recipe_ID" = "Categories"."Recipe_ID"
+  AND "Category" = (SELECT "Category"
+FROM "Categories", "Recipe"
+WHERE "Author_Username" = %s AND "Recipe"."Recipe_ID" = "Categories"."Recipe_ID"
+GROUP BY "Category"
+order by Count("Category") DESC
+LIMIT 1)
+ORDER BY "Rating" DESC
+LIMIT 1"""
+    cur.execute(query, [username, username])
+    return cur.fetchall()
+
+def get_case_two_rec(username: str):
+    query = """
+    SELECT *
+FROM "Recipe", "History"
+WHERE "History"."Recipe_ID" = "Recipe"."Recipe_ID"  AND "History"."User_ID" = (SELECT "User"."User_ID" FROM "User" WHERE "Username" = %s)
+ORDER BY "Recipe"."Rating" DESC 
+LIMIT 1"""
+    cur.execute(query, [username])
+    return cur.fetchall()
