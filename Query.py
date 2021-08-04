@@ -383,3 +383,7 @@ LIMIT 1"""
 def get_best_fifty():
     cur.execute('SELECT * FROM "Recipe" ORDER BY "Rating" DESC LIMIT 50')
     return cur.fetchall()
+
+def get_able_to_made_recipe():
+    cur.execute('SELECT * FROM "Recipe" WHERE "Recipe_ID" IN (SELECT "Recipe_ID" FROM "Ingredients", "Track" WHERE "Quantity_Needed" = "Track"."Current_Quantity" AND "Ingredients"."Item_ID" = "Track"."Item_ID")')
+    return cur.fetchall()

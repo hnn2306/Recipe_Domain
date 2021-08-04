@@ -93,10 +93,10 @@ def create_recipe(user: User):  # TODO
     recipe = Recipe(id, name, des, serv, diff, steps, time, rating, user, categories, ingredients)
     Query.create_recipe(id, name, des, serv, diff, steps, time, rating, user.username, categories, ingredients)
 
-    #TODO what to do with the recipe object??
+    # TODO what to do with the recipe object??
 
 
-def search_by_name(user:User):
+def search_by_name(user: User):
     name = input("Enter name: ")
     query = Query.get_recipe_by_name(name)
 
@@ -328,7 +328,7 @@ def create_recipe_from_query(query: tuple) -> Recipe:
 
     # create the item
     receta = Recipe(id, query[1], query[2], int(query[3]), query[4], query[5], int(query[6]),
-            int(query[7]), query[8], cats, ing)
+                    int(query[7]), query[8], cats, ing)
 
     return receta
 
@@ -408,7 +408,8 @@ def edit_a_recipe_menu(recipe: Recipe, user: User):
                 else:
                     Query.update_recipe("Recipe_Name", name, recipe.recipe_id)
                     clear()
-                    print("Recipe Name changed from {rec_name} to {new_name}.\n".format(rec_name=recipe.name, new_name=name))
+                    print("Recipe Name changed from {rec_name} to {new_name}.\n".format(rec_name=recipe.name,
+                                                                                        new_name=name))
                     recipe.name = name
                     continue
 
@@ -440,7 +441,8 @@ def edit_a_recipe_menu(recipe: Recipe, user: User):
                 else:
                     Query.update_recipe("Servings", serv, recipe.recipe_id)
                     clear()
-                    print("Recipe Servings changed from {old_serv} to {new_serv}.\n".format(old_serv=recipe.servings, new_serv=serv))
+                    print("Recipe Servings changed from {old_serv} to {new_serv}.\n".format(old_serv=recipe.servings,
+                                                                                            new_serv=serv))
                     recipe.servings = serv
                     continue
 
@@ -456,7 +458,9 @@ def edit_a_recipe_menu(recipe: Recipe, user: User):
                 else:
                     Query.update_recipe("Difficulty", diff, recipe.recipe_id)
                     clear()
-                    print("Recipe Difficulty changed from {old_diff} to {new_diff}.\n".format(old_diff=recipe.difficulty, new_diff=diff))
+                    print(
+                        "Recipe Difficulty changed from {old_diff} to {new_diff}.\n".format(old_diff=recipe.difficulty,
+                                                                                            new_diff=diff))
                     recipe.difficulty = diff
                     continue
 
@@ -488,7 +492,8 @@ def edit_a_recipe_menu(recipe: Recipe, user: User):
                 else:
                     Query.update_recipe("Cooking_Time", time, recipe.recipe_id)
                     clear()
-                    print("Recipe Name changed from {old_time} to {new_time}.\n".format(old_time=recipe.cooking_time, new_time=time))
+                    print("Recipe Name changed from {old_time} to {new_time}.\n".format(old_time=recipe.cooking_time,
+                                                                                        new_time=time))
                     recipe.cooking_time = time
                     continue
 
@@ -504,7 +509,8 @@ def edit_a_recipe_menu(recipe: Recipe, user: User):
                 else:
                     Query.update_recipe("Rating", rat, recipe.recipe_id)
                     clear()
-                    print("Recipe Rating changed from {old_rat} to {new_rat}.\n".format(old_rat=recipe.rating, new_rat=rat))
+                    print("Recipe Rating changed from {old_rat} to {new_rat}.\n".format(old_rat=recipe.rating,
+                                                                                        new_rat=rat))
                     recipe.rating = rat
                     continue
 
@@ -527,6 +533,19 @@ def edit_a_recipe_menu(recipe: Recipe, user: User):
             continue
 
 
+def list_recipe_able_to_made():
+    query = Query.get_able_to_made_recipe()
+
+    print("Recipes that can be made with current items")
+    if query != []:
+        for i in query:
+            print(create_recipe_from_query(i))
+
+    input("Press any key to close")
+    clear()
+    return True
+
+
 def recipe_menu(user: User):
     """
     displays the different thins that can be done with recipes
@@ -545,17 +564,18 @@ def recipe_menu(user: User):
               "7. Edit a Recipe",
               "8. TOP 50 Recommended",
               "9. Get Recommendation",
-              "10. Go Back to Main Menu", sep="\n")
+              "10. List recipe that could be made",
+              "11. Go Back to Main Menu", sep="\n")
 
         try:
             op = int(input(">"))
 
             if op == 1:
                 clear()
-                create_recipe(user)
-                clear()
-                continue
-
+                if create_recipe(user):
+                    clear()
+                    continue
+                break
             elif op == 2:
                 clear()
                 display_all_recipes()
@@ -565,7 +585,6 @@ def recipe_menu(user: User):
                 if display_personal_recipes(user):
                     clear()
                     continue
-
                 break
             elif op == 4:
                 clear()
@@ -610,6 +629,11 @@ def recipe_menu(user: User):
                     continue
                 break
             elif op == 10:
+                clear()
+                list_recipe_able_to_made()
+                continue
+
+            elif op == 11:
                 continue
 
         except ValueError:
@@ -629,12 +653,12 @@ def get_a_recommendation(user: User):
     clear()
     return True
 
+
 def add_pantry_item(user: User):
     name = input("Enter name: ")
     aisle = input("Enter aisle: ")
     exdate = input("Enter expire date (YYYY-MM-DD): ")
     quanity = input("Enter how item quantity: ")
-
 
     next_id = len(Query.get_items()) + 1
     Query.create_item(next_id, aisle, name, exdate)
@@ -717,7 +741,7 @@ def user_edit_menu(user: User):
               "================",
               "1. Edit Username",
               "2. Edit Password",
-              "3. Go Back", sep="\n") #TODO
+              "3. Go Back", sep="\n")  # TODO
 
         try:
             op = int(input("> "))
@@ -769,14 +793,14 @@ def inner_menu(user: User):
     :return: True if User log out
     """
     clear()
-    print("Welcome back {name}!".format(name = user.username))
+    print("Welcome back {name}!".format(name=user.username))
     while True:
         print("Choose an option",
               "================",
               "1. Recipe Book",
               "2. View Pantry",
-              "3. Edit User Info", #TODO
-              "4. Log Out", sep="\n") #TODO
+              "3. Edit User Info",  # TODO
+              "4. Log Out", sep="\n")  # TODO
 
         try:
             op = int(input("> "))
@@ -843,10 +867,10 @@ def login():
 
     if query == []:
         clear()
-        print("User {s} does not exist. Verify or try again".format(s = username))
+        print("User {s} does not exist. Verify or try again".format(s=username))
         menu()
     else:
-        if(query[0][1] == password):
+        if (query[0][1] == password):
             print("Logging you in ...")
             # print(query)
             # time.sleep(5)
@@ -873,7 +897,7 @@ def register():
 
     if query != []:
         clear()
-        print("User {s} already exists. Try logging in.".format(s = username))
+        print("User {s} already exists. Try logging in.".format(s=username))
         menu()
     else:
         next_id = len(Query.get_users()) + 1
@@ -889,7 +913,7 @@ def menu():
     displays the menu option and directs the user to the next step
     :return: None
     """
-    while(True):
+    while (True):
         print("Choose an option", "================",
               "1. Login",
               "2. Register",
@@ -921,6 +945,7 @@ def menu():
 def main():
     print("Welcome to Recipe Domain by team Gyarados\n")
     menu()
+
 
 if __name__ == "__main__":
     main()
