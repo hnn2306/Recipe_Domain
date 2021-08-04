@@ -552,10 +552,10 @@ def recipe_menu(user: User):
 
             if op == 1:
                 clear()
-                if create_recipe(user):
-                    clear()
-                    continue
-                break
+                create_recipe(user)
+                clear()
+                continue
+
             elif op == 2:
                 clear()
                 display_all_recipes()
@@ -565,6 +565,7 @@ def recipe_menu(user: User):
                 if display_personal_recipes(user):
                     clear()
                     continue
+
                 break
             elif op == 4:
                 clear()
