@@ -189,6 +189,7 @@ def search_recipes_menu(user: User):
 
 def sort(sort_type):
     order = ""
+
     while True:
         try:
             order = input("ASC or DESC? ")
@@ -542,7 +543,9 @@ def recipe_menu(user: User):
               "5. Search Recipes",
               "6. Cook Recipe",
               "7. Edit a Recipe",
-              "8. Go Back to Main Menu", sep="\n")
+              "8. TOP 50 Recommended",
+              "9. Get Recommendation",
+              "10. Go Back to Main Menu", sep="\n")
 
         try:
             op = int(input(">"))
@@ -593,7 +596,21 @@ def recipe_menu(user: User):
                         continue
 
             elif op == 8:
+                clear()
+                q = Query.get_best_fifty()
+                for rec in q:
+                    print(create_recipe_from_query(rec))
+                input("press any key to close")
                 return True
+                clear()
+            elif op == 9:
+                clear()
+                if get_a_recommendation(user):
+                    continue
+                break
+            elif op == 10:
+                continue
+
         except ValueError:
             clear()
             print("Incorrect option. Try again\n")
@@ -611,7 +628,7 @@ def get_a_recommendation(user: User):
     clear()
     return True
 
-def add_pantry_item():
+def add_pantry_item(user: User):
     name = input("Enter name: ")
     aisle = input("Enter aisle: ")
     exdate = input("Enter expire date (YYYY-MM-DD): ")

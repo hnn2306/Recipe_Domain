@@ -142,11 +142,12 @@ def update_track(id, value):
 
 def create_track(quanBought, currQuant, ownerID, itemID):
     try:
-        cur.execute('INSERT INTO "Track" ("Purchase_Date", "Quantity_Bought", "Curent_Quantity", "Owner_User_ID", "Item_ID" ) VALUES (%s, %s, %s, %s, %s)',
+        cur.execute('INSERT INTO "Track" ("Purchase_Date", "Quantity_Bought", "Current_Quantity", "Owner_User_ID", "Item_ID" ) VALUES (%s, %s, %s, %s, %s)',
                     (date.today(), quanBought, currQuant, ownerID, itemID ))
         conn.commit()
     except:
-        print("Could not create item")
+        # print("Could not create item")
+        pass
 
 
 def get_track():
@@ -376,4 +377,9 @@ WHERE "History"."Recipe_ID" = "Recipe"."Recipe_ID"  AND "History"."User_ID" = (S
 ORDER BY "Recipe"."Rating" DESC 
 LIMIT 1"""
     cur.execute(query, [username])
+    return cur.fetchall()
+
+
+def get_best_fifty():
+    cur.execute('SELECT * FROM "Recipe" ORDER BY "Rating" DESC LIMIT 50')
     return cur.fetchall()
